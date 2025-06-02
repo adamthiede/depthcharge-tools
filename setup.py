@@ -27,7 +27,6 @@ setuptools.setup(
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
         'Topic :: System :: Boot',
