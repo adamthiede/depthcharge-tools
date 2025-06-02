@@ -1,0 +1,11 @@
+image: alpine:edge
+
+build:
+  stage: build
+  script:
+    - apk add --no-cache python3 py3-setuptools py3-importlib-metadata py3-importlib-resources
+    - python3 setup.py build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+
+
