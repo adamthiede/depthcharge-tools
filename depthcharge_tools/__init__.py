@@ -8,7 +8,9 @@
 import glob
 import logging
 import pathlib
-import pkg_resources
+import importlib
+import importlib_metadata
+from packaging.version import parse as parse_version
 import re
 import subprocess
 
@@ -18,14 +20,15 @@ logger.addHandler(logging.NullHandler())
 
 def get_version():
     version = None
-    pkg_path = pkg_resources.resource_filename(__name__, '')
+    ref = importlib.resources.files(__name__)
+    pkg_path = importlib.resources.as_file(ref).args[0]
     pkg_path = pathlib.Path(pkg_path).resolve()
 
     try:
-        self = pkg_resources.require(__name__)[0]
-        version = self.version
+        self = importlib_metadata.metadata(__name__)
+        version = self.get("version")
 
-    except pkg_resources.DistributionNotFound:
+    except importlib_metadata.PackageNotFoundError:
         setup_py = pkg_path.parent / "setup.py"
         if setup_py.exists():
             version = re.findall(
@@ -49,15 +52,15 @@ def get_version():
                 version = tag
 
     if version is not None:
-        return pkg_resources.parse_version(version)
+        return parse_version(version)
 
 __version__ = get_version()
 
-config_ini = pkg_resources.resource_string(__name__, "config.ini")
-config_ini = config_ini.decode("utf-8")
+config_ini = importlib.resources.files(__name__).joinpath('config.ini')
+config_ini = config_ini.read_bytes().decode("utf-8")
 
-boards_ini = pkg_resources.resource_string(__name__, "boards.ini")
-boards_ini = boards_ini.decode("utf-8")
+boards_ini = importlib.resources.files(__name__).joinpath('boards.ini')
+boards_ini = boards_ini.read_bytes().decode("utf-8")
 
 config_files = [
     *glob.glob("/etc/depthcharge-tools/config"),
